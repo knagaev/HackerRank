@@ -7,54 +7,29 @@ vector<string> split_string(string);
 // Complete the acmTeam function below.
 vector<int> acmTeam(vector<string> topic) 
 {
-    // transposed matrix: skills -> teams
-    vector<vector<int>> skills(topic[0].size());
-
-    for (const auto& t : topic)
+    int maxPairTopics = 0;
+    int teamsWithMax = 0;
+    for (auto iti = cbegin(topic); iti < prev(cend(topic)); ++iti)
     {
-        for (size_t i = 0; i < t.length(); ++i)
+        for (auto itj = next(iti); itj < cend(topic); ++itj)
         {
-            skills[i].push_back(t[i] - '0');
-        }
-    }
-
-    map<int, int> badSkills; // counter of bad skills (both zeroes) for team
-    for (const auto& skill : skills)
-    {
-        for (size_t i = 0; i < skill.size() - 1; ++i)
-        {
-            if (skill[i] != 0) continue;
-            for (size_t j = i + 1; j < skill.size(); ++j)
+            int pairTopics = 0;
+            for (auto itic = cbegin(*iti), itjc = cbegin(*itj); itic != cend(*iti); ++itic, ++itjc)
             {
-                // hash value for pair of teams
-                auto pairHash = i * topic.size() + j;
-                
-                if (badSkills.find(pairHash) == badSkills.end()) 
-                    badSkills[pairHash] = 0;
-
-                if (skill[j] != 0) continue;
-                ++badSkills[pairHash];
+                if (*itic == '1' || *itjc == '1')
+                    ++pairTopics;
+                if (pairTopics == maxPairTopics)
+                    ++teamsWithMax;
+                if (pairTopics > maxPairTopics)
+                {
+                    maxPairTopics = pairTopics;
+                    teamsWithMax = 1;
+                }
             }
         }
     }
 
-    auto minBadSkills = skills.size();
-    int countTeams = 0;
-    for (const auto& bs : badSkills)
-    {
-        if (bs.second == minBadSkills)
-        {
-            ++countTeams;
-            continue;
-        }
-        if (bs.second < minBadSkills)
-        {
-            minBadSkills = bs.second;
-            countTeams = 1;
-        }
-    }
-
-    return { static_cast<int>(skills.size() - minBadSkills), countTeams};
+    return { maxPairTopics, teamsWithMax };
 }
 
 int main()
