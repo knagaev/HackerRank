@@ -2,6 +2,7 @@
 
 using namespace std;
 
+// Disjoint sets union
 class DsuMap
 {
 public:
